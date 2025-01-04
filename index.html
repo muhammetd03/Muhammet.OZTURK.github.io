@@ -138,7 +138,7 @@
                 warrior.alive = true;
                 wizard.alive = true;
                 warrior.x = 100;
-                wizard.x = 800;
+                wizard.x = canvas.width - wizardStartPadding; // Adjusted position
                 gameOver = false;
                 startCountdown();
             }
@@ -154,6 +154,7 @@
             let gameOver = false;
 
             const imagesPadding = 250;
+            const wizardStartPadding = 500;
 
             class Fighter {
                 constructor(
@@ -377,7 +378,7 @@
                 false
             );
             const wizard = new Fighter(
-                800,
+                canvas.width - wizardStartPadding, // Adjusted position
                 400,
                 wizardIdleSprite,
                 wizardAttack1Sprite,
