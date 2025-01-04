@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Brawler Game</title>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                background-color: black;
+            }
+            canvas {
+                display: block;
+                margin: auto;
+                background: url('assets/images/background/background.jpg')
+                    no-repeat center center;
+                background-size: cover;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="gameCanvas"></canvas>
+
+        <script>
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = 1000;
+            canvas.height = 600;
+
+            // Load assets
+            const warriorImg = new Image();
+            warriorImg.src = 'assets/images/warrior/Sprites/warrior.png';
+
+            const wizardImg = new Image();
+            wizardImg.src = 'assets/images/wizard/Sprites/wizard.png';
+
+            const victoryImg = new Image();
+            victoryImg.src = 'assets/images/icons/victory.png';
+
+            const swordSound = new Audio('assets/audio/sword.wav');
+            const magicSound = new Audio('assets/audio/magic.wav');
+            const backgroundMusic = new Audio('assets/audio/music.mp3');
+            backgroundMusic.loop = true;
+            backgroundMusic.volume = 0.5;
+            backgroundMusic.play();
+
+            // Game variables
+            const FPS = 60;
+            const gravity = 1.5;
+            let gameOver = false;
+
+            class Fighter {
+                constructor(x, y, image, scale, healthBarX, healthBarY) {
+                    this.x = x;
+                    this.y = y;
+                    this.width = 50;
+                    this.height = 150;
+                    this.image = image;
+                    this.scale = scale;
+                    this.health = 100;
+                    this.isJumping = false;
+                    this.velocityY = 0;
+                    this.healthBarX = healthBarX;
+                    this.healthBarY = healthBarY;
+                    this.alive = true;
+                }
+
+                draw() {
+                    ctx.drawImage(
+                        this.image,
+                        this.x,
+                        this.y,
+                        this.width * this.scale,
+                        this.height * this.scale
+                    );
+                    this.drawHealthBar();
+                }
+
+                drawHealthBar() {
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(this.healthBarX, this.healthBarY, 200, 20);
+                    ctx.fillStyle = 'yellow';
+                    ctx.fillRect(
+                        this.healthBarX,
+                        this.healthBarY,
+                        2 * this.health,
+                        20
+                    );
+                }
+
+                move(left, right, jumpKey) {
+                    if (!this.alive) return;
+
+                    if (keys[left] && this.x > 0) {
+                        this.x -= 5;
+                    }
+                    if (
+                        keys[right] &&
+                        this.x < canvas.width - this.width * this.scale
+                    ) {
+                        this.x += 5;
+                    }
+                    if (keys[jumpKey] && !this.isJumping) {
+                        this.velocityY = -20;
+                        this.isJumping = true;
+                    }
+
+                    this.y += this.velocityY;
+                    this.velocityY += gravity;
+
+                    if (
+                        this.y + this.height * this.scale >=
+                        canvas.height - 50
+                    ) {
+                        this.y = canvas.height - 50 - this.height * this.scale;
+                        this.isJumping = false;
+                    }
+                }
+
+                attack(target) {
+                    if (!this.alive || !target.alive) return;
+
+                    const distance = Math.abs(this.x - target.x);
+                    if (distance < 100) {
+                        target.health -= 10;
+                        swordSound.play();
+                        if (target.health <= 0) {
+                            target.alive = false;
+                        }
+                    }
+                }
+            }
+
+            // Initialize fighters
+            const warrior = new Fighter(100, 400, warriorImg, 2, 20, 20);
+            const wizard = new Fighter(
+                800,
+                400,
+                wizardImg,
+                2,
+                canvas.width - 220,
+                20
+            );
+
+            // Input handling
+            const keys = {};
+            window.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            window.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+
+            // Game loop
+            function gameLoop() {
+                if (gameOver) {
+                    ctx.drawImage(
+                        victoryImg,
+                        canvas.width / 2 - 150,
+                        canvas.height / 3,
+                        300,
+                        150
+                    );
+                    return;
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Update and draw fighters
+                warrior.move('a', 'd', 'w');
+                wizard.move('ArrowLeft', 'ArrowRight', 'ArrowUp');
+
+                warrior.draw();
+                wizard.draw();
+
+                // Check for game over
+                if (!warrior.alive || !wizard.alive) {
+                    gameOver = true;
+                }
+
+                requestAnimationFrame(gameLoop);
+            }
+
+            // Start game
+            gameLoop();
+        </script>
+    </body>
+</html>
