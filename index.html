@@ -134,6 +134,8 @@
             const gravity = 1.5;
             let gameOver = false;
 
+            const imagesPadding = 250;
+
             class Fighter {
                 constructor(
                     x,
@@ -272,12 +274,13 @@
                 move(left, right, jumpKey) {
                     if (!this.alive) return;
 
-                    if (keys[left] && this.x > 0) {
+                    if (keys[left] && this.x + imagesPadding > 0) {
                         this.x -= 5;
                     }
                     if (
                         keys[right] &&
-                        this.x < canvas.width - this.frameWidth * this.scale
+                        this.x - imagesPadding <
+                            canvas.width - this.frameWidth * this.scale
                     ) {
                         this.x += 5;
                     }
