@@ -167,17 +167,34 @@
 
                 draw() {
                     const frameX = this.currentFrame * this.frameWidth;
-                    ctx.drawImage(
-                        this.currentSprite,
-                        frameX,
-                        0,
-                        this.frameWidth,
-                        this.frameHeight,
-                        this.x,
-                        this.y,
-                        this.frameWidth * this.scale,
-                        this.frameHeight * this.scale
-                    );
+                    ctx.save();
+                    if (this === wizard) {
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(
+                            this.currentSprite,
+                            frameX,
+                            0,
+                            this.frameWidth,
+                            this.frameHeight,
+                            -this.x - this.frameWidth * this.scale,
+                            this.y,
+                            this.frameWidth * this.scale,
+                            this.frameHeight * this.scale
+                        );
+                    } else {
+                        ctx.drawImage(
+                            this.currentSprite,
+                            frameX,
+                            0,
+                            this.frameWidth,
+                            this.frameHeight,
+                            this.x,
+                            this.y,
+                            this.frameWidth * this.scale,
+                            this.frameHeight * this.scale
+                        );
+                    }
+                    ctx.restore();
                     this.drawHealthBar();
                     this.updateHitbox();
                     this.animate();
