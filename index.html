@@ -5,10 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Brawler Game</title>
         <style>
+            @font-face {
+                font-family: 'Turok';
+                src: url('assets/fonts/turok.ttf') format('truetype');
+            }
             body {
                 margin: 0;
                 overflow: hidden;
                 background-color: black;
+                font-family: 'Turok', sans-serif;
             }
             canvas {
                 display: block;
@@ -18,7 +23,8 @@
                 background-size: cover;
             }
             #startOverlay,
-            #replayOverlay {
+            #replayOverlay,
+            #countdownOverlay {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -54,6 +60,7 @@
                 <button id="replayButton">Replay</button>
             </div>
         </div>
+        <div id="countdownOverlay" style="display: none"></div>
         <canvas id="gameCanvas"></canvas>
 
         <script>
@@ -104,6 +111,8 @@
             // Wait for user interaction
             const startOverlay = document.getElementById('startOverlay');
             const replayOverlay = document.getElementById('replayOverlay');
+            const countdownOverlay =
+                document.getElementById('countdownOverlay');
             const replayButton = document.getElementById('replayButton');
 
             let warriorScore = 0;
@@ -115,7 +124,11 @@
                 });
 
                 startOverlay.style.display = 'none';
-                gameLoop();
+                startCountdown();
+
+                // Remove event listeners
+                window.removeEventListener('click', startGame);
+                window.removeEventListener('keydown', startGame);
             }
 
             function resetGame() {
@@ -127,7 +140,7 @@
                 warrior.x = 100;
                 wizard.x = 800;
                 gameOver = false;
-                gameLoop();
+                startCountdown();
             }
 
             replayButton.addEventListener('click', resetGame);
@@ -390,6 +403,23 @@
             window.addEventListener('keyup', (e) => {
                 keys[e.key] = false;
             });
+
+            function startCountdown() {
+                let countdown = 3;
+                countdownOverlay.style.display = 'flex';
+                countdownOverlay.innerHTML = `<p>${countdown}</p>`;
+
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        countdownOverlay.innerHTML = `<p>${countdown}</p>`;
+                    } else {
+                        clearInterval(countdownInterval);
+                        countdownOverlay.style.display = 'none';
+                        gameLoop();
+                    }
+                }, 1000);
+            }
 
             function gameLoop() {
                 if (gameOver) {
