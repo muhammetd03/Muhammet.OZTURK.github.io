@@ -17,9 +17,24 @@
                     no-repeat center center;
                 background-size: cover;
             }
+            #startOverlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 24px;
+                z-index: 1000;
+            }
         </style>
     </head>
     <body>
+        <div id="startOverlay">Click or press any key to start</div>
         <canvas id="gameCanvas"></canvas>
 
         <script>
@@ -44,7 +59,20 @@
             const backgroundMusic = new Audio('assets/audio/music.mp3');
             backgroundMusic.loop = true;
             backgroundMusic.volume = 0.5;
-            backgroundMusic.play();
+
+            // Wait for user interaction
+            const startOverlay = document.getElementById('startOverlay');
+            function startGame() {
+                backgroundMusic.play().catch((err) => {
+                    console.warn('Autoplay failed:', err);
+                });
+
+                startOverlay.style.display = 'none';
+                gameLoop();
+            }
+
+            window.addEventListener('click', startGame, { once: true });
+            window.addEventListener('keydown', startGame, { once: true });
 
             // Game variables
             const FPS = 60;
@@ -182,9 +210,6 @@
 
                 requestAnimationFrame(gameLoop);
             }
-
-            // Start game
-            gameLoop();
         </script>
     </body>
 </html>
