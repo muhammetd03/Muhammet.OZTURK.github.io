@@ -127,20 +127,79 @@ class Fighter {
         this.scale = scale;
         this.isAttacking = false;
         this.attackCooldown = 0;
-        this.hitbox = {
-            x: this.x,
-            y: this.y,
-            width: this.frameWidth * this.scale,
-            height: this.frameHeight * this.scale,
-        };
+        this.setHitBox();
         this.attackSound = attackSound;
         this.isWizard = isWizard;
         this.direction = 'right'; // Add direction property
     }
 
+    setHitBox() {
+        const x = this.x;
+        const y = this.y;
+        const frameWidth = this.frameWidth;
+        const frameHeight = this.frameHeight;
+
+        if (this.isWizard) {
+
+            this.hitbox = {
+                x: x + frameWidth / 1.25,
+                y: y + frameHeight / 1.25,
+                width: frameWidth * 1.5,
+                height: frameHeight * 1.5,
+            };
+        } else {
+
+            this.hitbox = {
+                x: x + frameWidth * 1.25,
+                y: y + frameHeight * 1.25,
+                width: frameWidth * 1.5,
+                height: frameHeight * 1.5,
+            };
+        }
+    }
+
+    /**
+     * Draws the current frame of the sprite on the canvas.
+     * 
+     * This method handles the drawing of the sprite, including flipping the sprite
+     * horizontally if the direction is 'left'. It also draws the health bar, updates
+     * the hitbox, and animates the sprite.
+     * 
+     * @param {CanvasRenderingContext2D} ctx - The rendering context to draw on.
+     * @param {HTMLImageElement} this.currentSprite - The image element of the current sprite.
+     * @param {number} this.currentFrame - The current frame index of the sprite animation.
+     * @param {number} this.frameWidth - The width of a single frame in the sprite sheet.
+     * @param {number} this.frameHeight - The height of a single frame in the sprite sheet.
+     * @param {number} this.x - The x-coordinate where the sprite should be drawn.
+     * @param {number} this.y - The y-coordinate where the sprite should be drawn.
+     * @param {number} this.scale - The scale factor to apply to the sprite.
+     * @param {string} this.direction - The direction the sprite is facing ('left' or other).
+     * 
+     * @method drawImage
+     * @param {HTMLImageElement} image - The image element to draw.
+     * @param {number} sx - The x-coordinate of the top-left corner of the sub-rectangle of the source image to draw into the destination context.
+     * @param {number} sy - The y-coordinate of the top-left corner of the sub-rectangle of the source image to draw into the destination context.
+     * @param {number} sWidth - The width of the sub-rectangle of the source image to draw into the destination context.
+     * @param {number} sHeight - The height of the sub-rectangle of the source image to draw into the destination context.
+     * @param {number} dx - The x-coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param {number} dy - The y-coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param {number} dWidth - The width to draw the image in the destination canvas.
+     * @param {number} dHeight - The height to draw the image in the destination canvas.
+     */
     draw() {
         const frameX = this.currentFrame * this.frameWidth;
         ctx.save();
+
+        // draw a red rectangle around the hitbox for debugging
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+            this.hitbox.x,
+            this.hitbox.y,
+            this.hitbox.width,
+            this.hitbox.height
+        );
+
         if (this.direction === 'left') {
             ctx.scale(-1, 1);
             ctx.drawImage(
@@ -167,9 +226,10 @@ class Fighter {
                 this.frameHeight * this.scale
             );
         }
+
         ctx.restore();
         this.drawHealthBar();
-        this.updateHitbox();
+        this.setHitBox();
         this.animate();
     }
 
@@ -206,15 +266,6 @@ class Fighter {
                 this.healthBarY + 40
             );
         }
-    }
-
-    updateHitbox() {
-        this.hitbox = {
-            x: this.x,
-            y: this.y,
-            width: this.frameWidth * this.scale,
-            height: this.frameHeight * this.scale,
-        };
     }
 
     animate() {
@@ -340,7 +391,7 @@ window.addEventListener('keyup', (e) => {
 });
 
 function startCountdown() {
-    let countdown = 3;
+    let countdown = 1;
     countdownOverlay.style.display = 'flex';
     const countdownTextEl = document.createElement('p');
     // text color red, font size 48px
