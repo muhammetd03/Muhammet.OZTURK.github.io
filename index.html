@@ -252,10 +252,10 @@
 
                     if (
                         this.y + this.frameHeight * this.scale >=
-                        canvas.height - 50
+                        canvas.height + 190
                     ) {
                         this.y =
-                            canvas.height - 50 - this.frameHeight * this.scale;
+                            canvas.height + 190 - this.frameHeight * this.scale;
                         this.isJumping = false;
                     }
                 }
