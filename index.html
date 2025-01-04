@@ -60,8 +60,14 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
 
-            canvas.width = 1000;
-            canvas.height = 600;
+            // 1920x1484
+            // make the width and height to fit width or height of the screen
+            // and keep the aspect ratio
+            const aspectRatio = 1920 / 1484;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            canvas.height = height;
+            canvas.width = height * aspectRatio;
 
             // Load assets
             const warriorIdleSprite = new Image();
@@ -391,11 +397,11 @@
                         wizardScore++;
                     }
                     replayOverlay.innerHTML = `
-      <div>
-        <p>${winner} Wins!</p>
-        <button id="replayButton">Next Round</button>
-      </div>
-    `;
+              <div>
+                <p>${winner} Wins!</p>
+                <button id="replayButton">Next Round</button>
+              </div>
+            `;
                     replayOverlay.style.display = 'flex';
 
                     // Reattach replay button event listener
