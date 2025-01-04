@@ -187,12 +187,13 @@
                     };
                     this.attackSound = attackSound;
                     this.isWizard = isWizard;
+                    this.direction = 'right'; // Add direction property
                 }
 
                 draw() {
                     const frameX = this.currentFrame * this.frameWidth;
                     ctx.save();
-                    if (this === wizard) {
+                    if (this.direction === 'left') {
                         ctx.scale(-1, 1);
                         ctx.drawImage(
                             this.currentSprite,
@@ -282,6 +283,7 @@
 
                     if (keys[left] && this.x + imagesPadding > 0) {
                         this.x -= 5;
+                        this.direction = 'left'; // Update direction
                     }
                     if (
                         keys[right] &&
@@ -289,6 +291,7 @@
                             canvas.width - this.frameWidth * this.scale
                     ) {
                         this.x += 5;
+                        this.direction = 'right'; // Update direction
                     }
                     if (keys[jumpKey] && !this.isJumping) {
                         this.velocityY = -20;
