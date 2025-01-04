@@ -45,11 +45,11 @@
             canvas.height = 600;
 
             // Load assets
-            const warriorImg = new Image();
-            warriorImg.src = 'assets/images/warrior/Sprites/warrior.png';
+            const warriorSprite = new Image();
+            warriorSprite.src = 'assets/images/warrior/Sprites/Idle.png'; // Idle animation with 8 frames
 
-            const wizardImg = new Image();
-            wizardImg.src = 'assets/images/wizard/Sprites/wizard.png';
+            const wizardSprite = new Image();
+            wizardSprite.src = 'assets/images/wizard/Sprites/Idle.png'; // Idle animation with 8 frames
 
             const victoryImg = new Image();
             victoryImg.src = 'assets/images/icons/victory.png';
@@ -80,13 +80,26 @@
             let gameOver = false;
 
             class Fighter {
-                constructor(x, y, image, scale, healthBarX, healthBarY) {
+                constructor(
+                    x,
+                    y,
+                    sprite,
+                    healthBarX,
+                    healthBarY,
+                    frameWidth,
+                    frameHeight,
+                    frameCount
+                ) {
                     this.x = x;
                     this.y = y;
-                    this.width = 50;
-                    this.height = 150;
-                    this.image = image;
-                    this.scale = scale;
+                    this.sprite = sprite;
+                    this.frameWidth = frameWidth; // Width of each frame
+                    this.frameHeight = frameHeight; // Height of each frame
+                    this.frameCount = frameCount; // Total number of frames
+                    this.currentFrame = 0; // Current animation frame
+                    this.frameIndex = 0;
+                    this.animationSpeed = 5; // Frames to wait before switching to the next frame
+                    this.animationCounter = 0; // Counter for timing frame changes
                     this.health = 100;
                     this.isJumping = false;
                     this.velocityY = 0;
@@ -96,14 +109,20 @@
                 }
 
                 draw() {
+                    const frameX = this.currentFrame * this.frameWidth; // X-offset for the current frame
                     ctx.drawImage(
-                        this.image,
+                        this.sprite,
+                        frameX,
+                        0, // Y-offset is 0 as all frames are in one row
+                        this.frameWidth,
+                        this.frameHeight,
                         this.x,
                         this.y,
-                        this.width * this.scale,
-                        this.height * this.scale
+                        this.frameWidth,
+                        this.frameHeight
                     );
                     this.drawHealthBar();
+                    this.animate();
                 }
 
                 drawHealthBar() {
@@ -118,6 +137,15 @@
                     );
                 }
 
+                animate() {
+                    this.animationCounter++;
+                    if (this.animationCounter >= this.animationSpeed) {
+                        this.currentFrame =
+                            (this.currentFrame + 1) % this.frameCount; // Loop through frames
+                        this.animationCounter = 0;
+                    }
+                }
+
                 move(left, right, jumpKey) {
                     if (!this.alive) return;
 
@@ -126,7 +154,7 @@
                     }
                     if (
                         keys[right] &&
-                        this.x < canvas.width - this.width * this.scale
+                        this.x < canvas.width - this.frameWidth
                     ) {
                         this.x += 5;
                     }
@@ -138,11 +166,8 @@
                     this.y += this.velocityY;
                     this.velocityY += gravity;
 
-                    if (
-                        this.y + this.height * this.scale >=
-                        canvas.height - 50
-                    ) {
-                        this.y = canvas.height - 50 - this.height * this.scale;
+                    if (this.y + this.frameHeight >= canvas.height - 50) {
+                        this.y = canvas.height - 50 - this.frameHeight;
                         this.isJumping = false;
                     }
                 }
@@ -162,15 +187,26 @@
             }
 
             // Initialize fighters
-            const warrior = new Fighter(100, 400, warriorImg, 2, 20, 20);
+            const warrior = new Fighter(
+                100,
+                400,
+                warriorSprite,
+                20,
+                20,
+                162,
+                162,
+                8
+            ); // Warrior: 8 frames, each 162x162
             const wizard = new Fighter(
                 800,
                 400,
-                wizardImg,
-                2,
+                wizardSprite,
                 canvas.width - 220,
-                20
-            );
+                20,
+                250,
+                250,
+                8
+            ); // Wizard: 8 frames, each 250x250
 
             // Input handling
             const keys = {};
