@@ -221,6 +221,13 @@
                         2 * this.health,
                         20
                     );
+                    ctx.fillStyle = 'black';
+                    ctx.font = '16px Arial';
+                    ctx.fillText(
+                        `${this.health}%`,
+                        this.healthBarX + 80,
+                        this.healthBarY + 15
+                    );
                 }
 
                 updateHitbox() {
