@@ -407,12 +407,17 @@
             function startCountdown() {
                 let countdown = 3;
                 countdownOverlay.style.display = 'flex';
-                countdownOverlay.innerHTML = `<p>${countdown}</p>`;
+                const countdownTextEl = document.createElement('p');
+                // text color red, font size 48px
+                countdownTextEl.style.color = 'red';
+                countdownTextEl.style.fontSize = '300px';
+                countdownTextEl.textContent = countdown;
+                countdownOverlay.appendChild(countdownTextEl);
 
                 const countdownInterval = setInterval(() => {
                     countdown--;
                     if (countdown > 0) {
-                        countdownOverlay.innerHTML = `<p>${countdown}</p>`;
+                        countdownTextEl.textContent = countdown;
                     } else {
                         clearInterval(countdownInterval);
                         countdownOverlay.style.display = 'none';
