@@ -17,7 +17,8 @@
                     no-repeat center center;
                 background-size: cover;
             }
-            #startOverlay {
+            #startOverlay,
+            #replayOverlay {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -31,10 +32,28 @@
                 font-size: 24px;
                 z-index: 1000;
             }
+            #replayOverlay button {
+                padding: 10px 20px;
+                font-size: 18px;
+                color: white;
+                background-color: red;
+                border: none;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            #replayOverlay button:hover {
+                background-color: darkred;
+            }
         </style>
     </head>
     <body>
         <div id="startOverlay">Click or press any key to start</div>
+        <div id="replayOverlay" style="display: none">
+            <div>
+                <p>Game Over!</p>
+                <button id="replayButton">Replay</button>
+            </div>
+        </div>
         <canvas id="gameCanvas"></canvas>
 
         <script>
@@ -69,6 +88,9 @@
 
             // Wait for user interaction
             const startOverlay = document.getElementById('startOverlay');
+            const replayOverlay = document.getElementById('replayOverlay');
+            const replayButton = document.getElementById('replayButton');
+
             function startGame() {
                 backgroundMusic.play().catch((err) => {
                     console.warn('Autoplay failed:', err);
@@ -77,6 +99,20 @@
                 startOverlay.style.display = 'none';
                 gameLoop();
             }
+
+            function resetGame() {
+                replayOverlay.style.display = 'none';
+                warrior.health = 100;
+                wizard.health = 100;
+                warrior.alive = true;
+                wizard.alive = true;
+                warrior.x = 100;
+                wizard.x = 800;
+                gameOver = false;
+                gameLoop();
+            }
+
+            replayButton.addEventListener('click', resetGame);
 
             window.addEventListener('click', startGame, { once: true });
             window.addEventListener('keydown', startGame, { once: true });
@@ -118,7 +154,7 @@
                     this.alive = true;
                     this.scale = scale;
                     this.isAttacking = false;
-                    this.attackCooldown = 0; // Cooldown timer
+                    this.attackCooldown = 0;
                     this.hitbox = {
                         x: this.x,
                         y: this.y,
@@ -211,7 +247,6 @@
                     this.isAttacking = true;
                     this.currentSprite = this.attackSprite;
 
-                    // Check collision
                     if (
                         this.hitbox.x + this.hitbox.width > target.hitbox.x &&
                         this.hitbox.x < target.hitbox.x + target.hitbox.width &&
@@ -225,14 +260,12 @@
                         }
                     }
 
-                    // Reset attack after 500ms
                     setTimeout(() => {
                         this.isAttacking = false;
                         this.currentSprite = this.idleSprite;
                     }, 500);
 
-                    // Start cooldown
-                    this.attackCooldown = 30; // Cooldown time
+                    this.attackCooldown = 30;
                 }
 
                 updateCooldown() {
@@ -242,7 +275,6 @@
                 }
             }
 
-            // Initialize fighters
             const warrior = new Fighter(
                 100,
                 400,
@@ -268,44 +300,45 @@
                 3
             );
 
-            // Input handling
             const keys = {};
             window.addEventListener('keydown', (e) => {
                 keys[e.key] = true;
-                if (e.key === 'r') warrior.attack(wizard); // Warrior attack
-                if (e.key === 'ArrowDown') wizard.attack(warrior); // Wizard attack
+                if (e.key === 'r') warrior.attack(wizard);
+                if (e.key === 'ArrowDown') wizard.attack(warrior);
             });
             window.addEventListener('keyup', (e) => {
                 keys[e.key] = false;
             });
 
-            // Game loop
             function gameLoop() {
                 if (gameOver) {
-                    ctx.drawImage(
-                        victoryImg,
-                        canvas.width / 2 - 150,
-                        canvas.height / 3,
-                        300,
-                        150
-                    );
+                    const winner = warrior.alive ? 'Warrior' : 'Wizard';
+                    replayOverlay.innerHTML = `
+      <div>
+        <p>${winner} Wins!</p>
+        <button id="replayButton">Replay</button>
+      </div>
+    `;
+                    replayOverlay.style.display = 'flex';
+
+                    // Reattach replay button event listener
+                    document
+                        .getElementById('replayButton')
+                        .addEventListener('click', resetGame);
                     return;
                 }
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Update cooldowns
                 warrior.updateCooldown();
                 wizard.updateCooldown();
 
-                // Update and draw fighters
                 warrior.move('a', 'd', 'w');
                 wizard.move('ArrowLeft', 'ArrowRight', 'ArrowUp');
 
                 warrior.draw();
                 wizard.draw();
 
-                // Check for game over
                 if (!warrior.alive || !wizard.alive) {
                     gameOver = true;
                 }
