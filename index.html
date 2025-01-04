@@ -100,6 +100,9 @@
             const replayOverlay = document.getElementById('replayOverlay');
             const replayButton = document.getElementById('replayButton');
 
+            let warriorScore = 0;
+            let wizardScore = 0;
+
             function startGame() {
                 backgroundMusic.play().catch((err) => {
                     console.warn('Autoplay failed:', err);
@@ -144,7 +147,8 @@
                     frameHeight,
                     frameCount,
                     scale,
-                    attackSound
+                    attackSound,
+                    isWizard
                 ) {
                     this.x = x;
                     this.y = y;
@@ -174,6 +178,7 @@
                         height: this.frameHeight * this.scale,
                     };
                     this.attackSound = attackSound;
+                    this.isWizard = isWizard;
                 }
 
                 draw() {
@@ -228,6 +233,22 @@
                         this.healthBarX + 80,
                         this.healthBarY + 15
                     );
+
+                    // Draw scores
+                    ctx.fillStyle = 'white';
+                    if (this.isWizard) {
+                        ctx.fillText(
+                            `Score: ${wizardScore}`,
+                            canvas.width - 220,
+                            this.healthBarY + 40
+                        );
+                    } else {
+                        ctx.fillText(
+                            `Score: ${warriorScore}`,
+                            this.healthBarX,
+                            this.healthBarY + 40
+                        );
+                    }
                 }
 
                 updateHitbox() {
@@ -327,7 +348,8 @@
                 162,
                 8,
                 4,
-                swordSound
+                swordSound,
+                false
             );
             const wizard = new Fighter(
                 800,
@@ -341,7 +363,8 @@
                 250,
                 8,
                 3,
-                magicSound
+                magicSound,
+                true
             );
 
             const keys = {};
@@ -359,10 +382,15 @@
             function gameLoop() {
                 if (gameOver) {
                     const winner = warrior.alive ? 'Warrior' : 'Wizard';
+                    if (warrior.alive) {
+                        warriorScore++;
+                    } else {
+                        wizardScore++;
+                    }
                     replayOverlay.innerHTML = `
       <div>
         <p>${winner} Wins!</p>
-        <button id="replayButton">Replay</button>
+        <button id="replayButton">Next Round</button>
       </div>
     `;
                     replayOverlay.style.display = 'flex';
