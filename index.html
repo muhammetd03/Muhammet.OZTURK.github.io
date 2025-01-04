@@ -133,7 +133,8 @@
                     frameWidth,
                     frameHeight,
                     frameCount,
-                    scale
+                    scale,
+                    attackSound
                 ) {
                     this.x = x;
                     this.y = y;
@@ -161,6 +162,7 @@
                         width: this.frameWidth * this.scale,
                         height: this.frameHeight * this.scale,
                     };
+                    this.attackSound = attackSound;
                 }
 
                 draw() {
@@ -254,7 +256,7 @@
                         this.hitbox.y < target.hitbox.y + target.hitbox.height
                     ) {
                         target.health -= 10;
-                        swordSound.play();
+                        this.attackSound.play();
                         if (target.health <= 0) {
                             target.alive = false;
                         }
@@ -285,7 +287,8 @@
                 162,
                 162,
                 8,
-                4
+                4,
+                swordSound
             );
             const wizard = new Fighter(
                 800,
@@ -297,7 +300,8 @@
                 250,
                 250,
                 8,
-                3
+                3,
+                magicSound
             );
 
             const keys = {};
