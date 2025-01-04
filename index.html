@@ -67,15 +67,24 @@
             const warriorIdleSprite = new Image();
             warriorIdleSprite.src = 'assets/images/warrior/Sprites/Idle.png';
 
-            const warriorAttackSprite = new Image();
-            warriorAttackSprite.src =
+            const warriorAttack1Sprite = new Image();
+            warriorAttack1Sprite.src =
                 'assets/images/warrior/Sprites/Attack1.png';
+
+            const warriorAttack2Sprite = new Image();
+            warriorAttack2Sprite.src =
+                'assets/images/warrior/Sprites/Attack2.png';
 
             const wizardIdleSprite = new Image();
             wizardIdleSprite.src = 'assets/images/wizard/Sprites/Idle.png';
 
-            const wizardAttackSprite = new Image();
-            wizardAttackSprite.src = 'assets/images/wizard/Sprites/Attack1.png';
+            const wizardAttack1Sprite = new Image();
+            wizardAttack1Sprite.src =
+                'assets/images/wizard/Sprites/Attack1.png';
+
+            const wizardAttack2Sprite = new Image();
+            wizardAttack2Sprite.src =
+                'assets/images/wizard/Sprites/Attack2.png';
 
             const victoryImg = new Image();
             victoryImg.src = 'assets/images/icons/victory.png';
@@ -127,7 +136,8 @@
                     x,
                     y,
                     idleSprite,
-                    attackSprite,
+                    attack1Sprite,
+                    attack2Sprite,
                     healthBarX,
                     healthBarY,
                     frameWidth,
@@ -139,7 +149,8 @@
                     this.x = x;
                     this.y = y;
                     this.idleSprite = idleSprite;
-                    this.attackSprite = attackSprite;
+                    this.attack1Sprite = attack1Sprite;
+                    this.attack2Sprite = attack2Sprite;
                     this.currentSprite = idleSprite;
                     this.frameWidth = frameWidth;
                     this.frameHeight = frameHeight;
@@ -260,11 +271,14 @@
                     }
                 }
 
-                attack(target) {
+                attack(target, attackType) {
                     if (!this.alive || this.attackCooldown > 0) return;
 
                     this.isAttacking = true;
-                    this.currentSprite = this.attackSprite;
+                    this.currentSprite =
+                        attackType === 1
+                            ? this.attack1Sprite
+                            : this.attack2Sprite;
 
                     if (
                         this.hitbox.x + this.hitbox.width > target.hitbox.x &&
@@ -298,7 +312,8 @@
                 100,
                 400,
                 warriorIdleSprite,
-                warriorAttackSprite,
+                warriorAttack1Sprite,
+                warriorAttack2Sprite,
                 20,
                 20,
                 162,
@@ -311,7 +326,8 @@
                 800,
                 400,
                 wizardIdleSprite,
-                wizardAttackSprite,
+                wizardAttack1Sprite,
+                wizardAttack2Sprite,
                 canvas.width - 220,
                 20,
                 250,
@@ -324,8 +340,10 @@
             const keys = {};
             window.addEventListener('keydown', (e) => {
                 keys[e.key] = true;
-                if (e.key === 'r') warrior.attack(wizard);
-                if (e.key === 'ArrowDown') wizard.attack(warrior);
+                if (e.key === 'r') warrior.attack(wizard, 1);
+                if (e.key === 'e') warrior.attack(wizard, 2);
+                if (e.key === '1') wizard.attack(warrior, 1);
+                if (e.key === '2') wizard.attack(warrior, 2);
             });
             window.addEventListener('keyup', (e) => {
                 keys[e.key] = false;
