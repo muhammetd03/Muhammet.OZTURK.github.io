@@ -365,6 +365,10 @@ window.addEventListener('keyup', (e) => {
 function startCountdown() {
     let countdown = 3;
     countdownOverlay.style.display = 'flex';
+
+    // Önceki sayaç elementlerini temizle
+    countdownOverlay.innerHTML = '';
+
     const countdownTextEl = document.createElement('p');
     // text color red, font size 48px
     countdownTextEl.style.color = 'red';
