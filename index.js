@@ -425,4 +425,3 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
-
