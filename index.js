@@ -163,14 +163,14 @@ class Fighter {
         ctx.save();
 
         // draw a red rectangle around the hitbox for debugging
-        ctx.strokeStyle = 'red';
+        /*ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
         ctx.strokeRect(
             this.hitbox.x,
             this.hitbox.y,
             this.hitbox.width,
             this.hitbox.height
-        );
+        );*/
 
         if (this.direction === 'left') {
             ctx.scale(-1, 1);
