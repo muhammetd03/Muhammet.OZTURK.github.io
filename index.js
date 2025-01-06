@@ -206,6 +206,21 @@ class Fighter {
             this.healthBarX + 80,
             this.healthBarY + 15
         );
+
+        ctx.fillStyle = 'white';
+        if (this.isWizard) {
+            ctx.fillText(
+                `Score: ${wizardScore}`,
+                canvas.width - 220,
+                this.healthBarY + 40
+            );
+        } else {
+            ctx.fillText(
+                `Score: ${warriorScore}`,
+                this.healthBarX,
+                this.healthBarY + 40
+            );
+        }
     }
 
     animate() {
