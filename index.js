@@ -303,7 +303,7 @@ class Fighter {
 
     checkHealthBoost() {
         if (this.health === 30 && !this.boostGiven) {
-            this.health += Math.ceil(this.health * 0.1);
+            this.health += Math.ceil(10 );
             this.boostGiven = true;
             alert(`${this.isWizard ? 'Wizard' : 'Warrior'}'s health boosted by 10%!`);
         }
@@ -384,6 +384,13 @@ function startCountdown() {
 function gameLoop() {
     if (gameOver) {
         const winner = warrior.alive ? 'Warrior' : 'Wizard';
+        
+        if (warrior.alive) {
+            warriorScore++; // Warrior kazandıysa skoru artır
+        } else {
+            wizardScore++; // Wizard kazandıysa skoru artır
+        }
+
         replayOverlay.innerHTML = `
               <div>
                 <p>${winner} Wins!</p>
@@ -418,3 +425,4 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+
