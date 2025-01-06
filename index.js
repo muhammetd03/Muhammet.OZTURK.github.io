@@ -223,7 +223,7 @@ class Fighter {
             this.healthBarY + 15
         );
 
-        // Draw scores
+        /*// Draw scores
         ctx.fillStyle = 'white';
         if (this.isWizard) {
             ctx.fillText(
@@ -237,7 +237,19 @@ class Fighter {
                 this.healthBarX,
                 this.healthBarY + 40
             );
-        }
+        }*/
+
+
+        // Skorları göster
+        ctx.fillStyle = 'white';
+        ctx.fillText(
+            `Score: ${this.isWizard ? wizardScore : warriorScore}`,
+            this.isWizard ? canvas.width - 220 : this.healthBarX,
+            this.healthBarY + 40
+        );
+
+        // Sağlık artırımı kontrolü
+        this.checkHealthBoost();
     }
 
     animate() {
@@ -317,6 +329,26 @@ class Fighter {
             this.attackCooldown--;
         }
     }
+
+    checkHealthBoost() {
+        if (this.health <= 30 && !this.boostGiven) {
+            this.health += Math.ceil(this.health * 0.1); // %10 artır
+            this.boostGiven = true; // Aynı döngüde tekrar artmasın
+            if (this.isWizard) {
+                wizardScore += 10; // Skoru artır
+            } else {
+                warriorScore += 10; // Skoru artır
+            }
+
+            // Uyarı mesajı
+            alert(`${this.isWizard ? 'Wizard' : 'Warrior'} received a health boost (+10 score)!`);
+        }
+    }
+
+    resetBoost() {
+        this.boostGiven = false; // Oyun sıfırlanırken boost kontrolü sıfırlanır
+    }
+
 }
 
 const warrior = new Fighter(
