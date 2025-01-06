@@ -15,23 +15,19 @@ const warriorIdleSprite = new Image();
 warriorIdleSprite.src = 'assets/images/warrior/Sprites/Idle.png';
 
 const warriorAttack1Sprite = new Image();
-warriorAttack1Sprite.src =
-    'assets/images/warrior/Sprites/Attack1.png';
+warriorAttack1Sprite.src = 'assets/images/warrior/Sprites/Attack1.png';
 
 const warriorAttack2Sprite = new Image();
-warriorAttack2Sprite.src =
-    'assets/images/warrior/Sprites/Attack2.png';
+warriorAttack2Sprite.src = 'assets/images/warrior/Sprites/Attack2.png';
 
 const wizardIdleSprite = new Image();
 wizardIdleSprite.src = 'assets/images/wizard/Sprites/Idle.png';
 
 const wizardAttack1Sprite = new Image();
-wizardAttack1Sprite.src =
-    'assets/images/wizard/Sprites/Attack1.png';
+wizardAttack1Sprite.src = 'assets/images/wizard/Sprites/Attack1.png';
 
 const wizardAttack2Sprite = new Image();
-wizardAttack2Sprite.src =
-    'assets/images/wizard/Sprites/Attack2.png';
+wizardAttack2Sprite.src = 'assets/images/wizard/Sprites/Attack2.png';
 
 const victoryImg = new Image();
 victoryImg.src = 'assets/images/icons/victory.png';
@@ -45,8 +41,7 @@ backgroundMusic.volume = 0.5;
 // Wait for user interaction
 const startOverlay = document.getElementById('startOverlay');
 const replayOverlay = document.getElementById('replayOverlay');
-const countdownOverlay =
-    document.getElementById('countdownOverlay');
+const countdownOverlay = document.getElementById('countdownOverlay');
 const replayButton = document.getElementById('replayButton');
 
 let warriorScore = 0;
@@ -141,7 +136,6 @@ class Fighter {
         const frameHeight = this.frameHeight;
 
         if (this.isWizard) {
-
             this.hitbox = {
                 x: x + frameWidth / 1.25,
                 y: y + frameHeight / 1.25,
@@ -149,7 +143,6 @@ class Fighter {
                 height: frameHeight * 1.5,
             };
         } else {
-
             this.hitbox = {
                 x: x + frameWidth * 1.25,
                 y: y + frameHeight * 1.25,
@@ -213,22 +206,6 @@ class Fighter {
             this.healthBarX + 80,
             this.healthBarY + 15
         );
-
-        // Draw scores
-        ctx.fillStyle = 'white';
-        if (this.isWizard) {
-            ctx.fillText(
-                `Score: ${wizardScore}`,
-                canvas.width - 220,
-                this.healthBarY + 40
-            );
-        } else {
-            ctx.fillText(
-                `Score: ${warriorScore}`,
-                this.healthBarX,
-                this.healthBarY + 40
-            );
-        }
     }
 
     animate() {
@@ -392,11 +369,6 @@ function startCountdown() {
 function gameLoop() {
     if (gameOver) {
         const winner = warrior.alive ? 'Warrior' : 'Wizard';
-        if (warrior.alive) {
-            warriorScore++;
-        } else {
-            wizardScore++;
-        }
         replayOverlay.innerHTML = `
               <div>
                 <p>${winner} Wins!</p>
