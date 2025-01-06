@@ -71,8 +71,8 @@ function resetGame() {
     wizard.health = 100;
     warrior.alive = true;
     wizard.alive = true;
-    warrior.x = 100;
-    wizard.x = canvas.width - wizardStartPadding; // Adjusted position
+    warrior.resetBoost(); // Reset boost control
+    wizard.resetBoost(); // Reset boost control
     gameOver = false;
     startCountdown();
 }
@@ -127,10 +127,11 @@ class Fighter {
         this.scale = scale;
         this.isAttacking = false;
         this.attackCooldown = 0;
+        this.boostGiven = false; // Control for health boost
         this.setHitBox();
         this.attackSound = attackSound;
         this.isWizard = isWizard;
-        this.direction = 'right'; // Add direction property
+        this.direction = 'right';
     }
 
     setHitBox() {
@@ -161,16 +162,6 @@ class Fighter {
     draw() {
         const frameX = this.currentFrame * this.frameWidth;
         ctx.save();
-
-        // draw a red rectangle around the hitbox for debugging
-        /*ctx.strokeStyle = 'red';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-            this.hitbox.x,
-            this.hitbox.y,
-            this.hitbox.width,
-            this.hitbox.height
-        );*/
 
         if (this.direction === 'left') {
             ctx.scale(-1, 1);
@@ -223,7 +214,7 @@ class Fighter {
             this.healthBarY + 15
         );
 
-        /*// Draw scores
+        // Draw scores
         ctx.fillStyle = 'white';
         if (this.isWizard) {
             ctx.fillText(
@@ -237,19 +228,7 @@ class Fighter {
                 this.healthBarX,
                 this.healthBarY + 40
             );
-        }*/
-
-
-        // Skorları göster
-        ctx.fillStyle = 'white';
-        ctx.fillText(
-            `Score: ${this.isWizard ? wizardScore : warriorScore}`,
-            this.isWizard ? canvas.width - 220 : this.healthBarX,
-            this.healthBarY + 40
-        );
-
-        // Sağlık artırımı kontrolü
-        this.checkHealthBoost();
+        }
     }
 
     animate() {
@@ -266,7 +245,7 @@ class Fighter {
 
         if (keys[left] && this.x + imagesPadding > 0) {
             this.x -= 5;
-            this.direction = 'left'; // Update direction
+            this.direction = 'left';
         }
         if (
             keys[right] &&
@@ -274,7 +253,7 @@ class Fighter {
             canvas.width - this.frameWidth * this.scale
         ) {
             this.x += 5;
-            this.direction = 'right'; // Update direction
+            this.direction = 'right';
         }
         if (keys[jumpKey] && !this.isJumping) {
             this.velocityY = -20;
@@ -331,24 +310,16 @@ class Fighter {
     }
 
     checkHealthBoost() {
-        if (this.health <= 30 && !this.boostGiven) {
-            this.health += Math.ceil(this.health * 0.1); // %10 artır
-            this.boostGiven = true; // Aynı döngüde tekrar artmasın
-            if (this.isWizard) {
-                wizardScore += 10; // Skoru artır
-            } else {
-                warriorScore += 10; // Skoru artır
-            }
-
-            // Uyarı mesajı
-            alert(`${this.isWizard ? 'Wizard' : 'Warrior'} received a health boost (+10 score)!`);
+        if (this.health === 30 && !this.boostGiven) {
+            this.health += Math.ceil(this.health * 0.1);
+            this.boostGiven = true;
+            alert(`${this.isWizard ? 'Wizard' : 'Warrior'}'s health boosted by 10%!`);
         }
     }
 
     resetBoost() {
-        this.boostGiven = false; // Oyun sıfırlanırken boost kontrolü sıfırlanır
+        this.boostGiven = false;
     }
-
 }
 
 const warrior = new Fighter(
@@ -367,7 +338,7 @@ const warrior = new Fighter(
     false
 );
 const wizard = new Fighter(
-    canvas.width - wizardStartPadding, // Adjusted position
+    canvas.width - wizardStartPadding,
     400,
     wizardIdleSprite,
     wizardAttack1Sprite,
@@ -398,11 +369,9 @@ function startCountdown() {
     let countdown = 3;
     countdownOverlay.style.display = 'flex';
 
-    // Önceki sayaç elementlerini temizle
     countdownOverlay.innerHTML = '';
 
     const countdownTextEl = document.createElement('p');
-    // text color red, font size 48px
     countdownTextEl.style.color = 'red';
     countdownTextEl.style.fontSize = '300px';
     countdownTextEl.textContent = countdown;
@@ -436,7 +405,6 @@ function gameLoop() {
             `;
         replayOverlay.style.display = 'flex';
 
-        // Reattach replay button event listener
         document
             .getElementById('replayButton')
             .addEventListener('click', resetGame);
@@ -452,7 +420,10 @@ function gameLoop() {
     wizard.move('ArrowLeft', 'ArrowRight', 'ArrowUp');
 
     warrior.draw();
+    warrior.checkHealthBoost();
+
     wizard.draw();
+    wizard.checkHealthBoost();
 
     if (!warrior.alive || !wizard.alive) {
         gameOver = true;
